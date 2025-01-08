@@ -16,8 +16,9 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 navigate to server folder and `npm run dev` -> Runs the app in development mode.
 Open [http://localhost:8000/api/user/register] to post data to server
 data -> 
-{
+
+`{
     "userName": "user",
     "password": "password",
     "email": "user@email.com"
-}
+}`
