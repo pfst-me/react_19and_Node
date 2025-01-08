@@ -17,8 +17,9 @@ navigate to server folder and `npm run dev` -> Runs the app in development mode.
 Open [http://localhost:8000/api/user/register] to post data to server
 data -> 
 
-`{
+```json
+{
     "userName": "user",
     "password": "password",
     "email": "user@email.com"
-}`
+}
