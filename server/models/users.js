@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 // Define a Mongoose schema and model for your collection
-const UserSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   customer_id: Number,
   username: String,
   email: String,
@@ -12,5 +13,11 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-const User = mongoose.model('User', UserSchema);1 
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+const User = mongoose.model('User', userSchema);1 
 module.exports = User;

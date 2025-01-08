@@ -1,5 +1,15 @@
 // controllers/userController.js
 const User = require('../models/users');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+
+// Helper: Generate JWT Token
+const generateToken = (user) => {
+  return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRY,
+  });
+};
 
 // Create a new user
 exports.createUser = async (req, res) => {
@@ -16,10 +26,14 @@ exports.createUser = async (req, res) => {
     }
     
     const user = new User(req.body);
-    user.save();
+    await user.save();
+
+    const token = generateToken(user);
+
     res.status(201).json({
       success: true,
       message: 'User registered successfully.',
+      token
     });
   } catch (err) {
     console.error('p->', err);
