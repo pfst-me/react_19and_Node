@@ -14,7 +14,8 @@ Open [http://localhost:3000] to view it in your browser.
 
 ### `To run server`
 
-navigate to server folder and `npm run dev` -> Runs the app in development mode.
+navigate to server folder and run
+### `npm run dev` -> Runs the app in development mode.
 Open [http://localhost:8000/api/user/register] to post data to server
 data -> 
 {
