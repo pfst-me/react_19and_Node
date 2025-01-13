@@ -14,6 +14,8 @@ dotenv.config();
 // Initialize Express application
 const app = express();
 
+app.use(cookieParser());
+
 // Connect to MongoDB
 connectDB();
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const LoginForm = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
     password: '',
     rememberMe: false,
   });
+  const [message, setMessage] = useState('');
 
   // Load saved email from localStorage when the component mounts
   useEffect(() => {
@@ -31,12 +33,8 @@ const LoginForm = ({ setIsLoggedIn }) => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
-    // e.preventDefault();
-
+  const handleSubmit = async (e) => {
     if (formData.email && formData.password) {
-      console.log('Login Submitted:', formData);
-
       // Save or remove the email based on the Remember Me checkbox
       if (formData.rememberMe) {
         localStorage.setItem('rememberedEmail', formData.email);
@@ -44,10 +42,21 @@ const LoginForm = ({ setIsLoggedIn }) => {
         localStorage.removeItem('rememberedEmail');
       }
 
-      alert('Login successful!');
-      navigate('/dashboard');
-      setIsLoggedIn(true)
-      
+      try {
+        const response = await axios.post(
+          'http://localhost:8000/api/user/login',
+          formData
+        );
+        localStorage.setItem('token', response.data.token);
+        setMessage(response.data.message || 'Login successful!');
+        navigate('/dashboard');
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error(error);
+        setMessage(
+          error.response?.data?.message || 'An error occurred during Login.'
+        );
+      }
     } else {
       alert('Please fill in both email and password.');
     }
@@ -61,6 +70,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
       rememberMe: false,
     });
     localStorage.removeItem('rememberedEmail');
+    setMessage('')
   };
 
   return (
@@ -140,6 +150,9 @@ const LoginForm = ({ setIsLoggedIn }) => {
           </Link>
         </p>
       </div>
+
+      {/* Message */}
+      {message && <div className='alert alert-info mt-4'>{message}</div>}
     </div>
   );
 };

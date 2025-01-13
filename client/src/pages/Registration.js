@@ -28,7 +28,6 @@ const RegistrationForm = () => {
     if (formData.username && formData.email && formData.password) {
       try {
         const response = await axios.post("http://localhost:8000/api/user/register", formData);
-        debugger;
         setMessage(response.data.message || "Registration successful!");
       } catch (error) {
         console.error(error);
@@ -47,6 +46,7 @@ const RegistrationForm = () => {
       password: '',
     });
     setFormSubmitted(false);
+    setMessage('');
   };
 
   return (
@@ -125,9 +125,9 @@ const RegistrationForm = () => {
           </Link>
         </p>
       </div>
-      {/* Success Message */}
+      {/* Message */}
       {message && (
-        <div className='alert alert-success mt-4'>
+        <div className='alert alert-info mt-4'>
           {message}
         </div>
       )}
