@@ -47,7 +47,8 @@ const LoginForm = ({ setIsLoggedIn }) => {
           'http://localhost:8000/api/user/login',
           formData
         );
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', response.data.token); // this is for normal token
+        localStorage.setItem('refresh-token', response.data.refreshToken); // this is for normal token
         setMessage(response.data.message || 'Login successful!');
         navigate('/dashboard');
         setIsLoggedIn(true);

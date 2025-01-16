@@ -16,6 +16,19 @@ const Dashboard = ({ name = '', email = '', setIsLoggedIn}) => {
     setData(null)
   }
 
+  const handleGetNewToken = async () => {
+    try{
+      const refreshToken = localStorage.getItem('refresh-token')
+      const response = await axios.post("http://localhost:8000/api/user/getNewAccessToken", {refreshToken:refreshToken});
+      if(response?.data){
+        localStorage.setItem("token", response.data.token)
+      }
+    } catch (error){
+      console.error(error);
+      setMessage(error.response?.data?.message || "An error occurred while retrieving new access token.");
+    }
+  }
+
   const handleGetUsers = async () => {
     setData(null)
     try {
@@ -77,6 +90,9 @@ const Dashboard = ({ name = '', email = '', setIsLoggedIn}) => {
         </button>
         <button type="button" className="btn btn-primary" onClick={handleGetUsersWithRefreshToken}>
           Get Users with Refresh token
+        </button>
+        <button type="button" className="btn btn-primary" onClick={handleGetNewToken}>
+          Get new Access Tocken
         </button>
         <button type="button" className="btn btn-danger" onClick={handleLogout}>
           Logout

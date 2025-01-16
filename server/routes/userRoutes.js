@@ -1,6 +1,6 @@
 // routes/userRoutes.js
 const express = require('express');
-const { createUser, getUsers, loginUser } = require('../controller/userController');
+const { createUser, getUsers, loginUser, getNewAccessToken } = require('../controller/userController');
 const protect = require('../middleware/authMiddleware')
 const protectRefresh = require('../middleware/authMiddlewareCookie')
 
@@ -15,5 +15,8 @@ router.post('/login', loginUser);
 // Route to get users
 router.get('/getUsers', protect, getUsers)
 router.get('/getUsersRefreshToken', protectRefresh, getUsers)
+
+//Route to get new access token
+router.post('/getNewAccessToken', getNewAccessToken)
 
 module.exports = router;

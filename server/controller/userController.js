@@ -4,21 +4,20 @@ const jwt = require('jsonwebtoken');
 
 // Helper: Generate JWT Token
 const generateToken = (user) => {
-  return jwt.sign({ id: user._id}, process.env.JWT_SECRET, {
+  return jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRY,
   });
 };
 
 // Helper: Generate Refresh Token
 const generateRefreshToken = (user) => {
-  return jwt.sign({ id: user._id}, process.env.REFRESH_SECRET, {
+  return jwt.sign({ id: user._id }, process.env.REFRESH_SECRET, {
     expiresIn: process.env.REFRESH_EXPIRY,
   });
 };
 
 // Create a new user
 exports.createUser = async (req, res) => {
-  // console.log(req);
   try {
     const { email } = req.body;
     const existingUser = await User.findOne({ email });
@@ -50,8 +49,6 @@ exports.createUser = async (req, res) => {
 //Login users
 exports.loginUser = async (req, res) => {
   try {
-    console.log('login data->', req);
-
     const { email, password } = req.body;
     const existingUser = await User.findOne({ email });
 
@@ -62,7 +59,6 @@ exports.loginUser = async (req, res) => {
       });
     }
     const isMatch = await existingUser.matchPassword(password);
-    console.log('match', isMatch);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -72,10 +68,8 @@ exports.loginUser = async (req, res) => {
     }
     const token = generateToken(existingUser);
     const refreshToken = generateRefreshToken(existingUser);
-    console.log('refreshToken->', refreshToken);
-    
 
-    // Set refresh token in HTTP-only cookie
+    // Set refresh token in HTTP-only cookie ( for secure token)
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -86,7 +80,8 @@ exports.loginUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Login success',
-      token,
+      token, // this is for normal token
+      refreshToken,
     });
   } catch (err) {
     console.error('Error on login', err);
@@ -110,5 +105,26 @@ exports.getUsers = async (req, res) => {
       message: 'Error fetching users',
       error: err,
     });
+  }
+};
+
+// new Accesstoken on refreshtoken
+exports.getNewAccessToken = async (req, res) => {
+  const { refreshToken } = req.body;
+  console.log('refreshToken->', refreshToken);
+  if (!refreshToken)
+    return res.status(401).json({ message: 'Refresh token required' });
+
+  try {
+    console.log('inside try');
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+    console.log('decoded->', decoded);
+
+    const newAccessToken = generateToken(decoded);
+    res.json({ token: newAccessToken });
+  } catch (error) {
+    console.log("error->", error);
+    
+    res.status(403).json({ message: 'Invalid or expired refresh token' });
   }
 };
